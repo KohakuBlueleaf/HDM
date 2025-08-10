@@ -1,14 +1,61 @@
 import json
 import torch
 
+from diffusers.configuration_utils import ConfigMixin, register_to_config
+from diffusers.models.modeling_utils import ModelMixin
+
 from xut.xut import XUDiT
 from .base import *
 
 
-class XUDiTConditionModel(BasicUNet):
-    def __init__(self, *args, **kwargs):
+class XUDiTConditionModel(ModelMixin, ConfigMixin):
+    _supports_gradient_checkpointing = True
+
+    @register_to_config
+    def __init__(
+        self,
+        patch_size=2,
+        input_dim=4,
+        dim=1024,
+        ctx_dim=1024,
+        ctx_size=256,
+        heads=16,
+        dim_head=64,
+        mlp_dim=3072,
+        depth=8,
+        enc_blocks=1,
+        dec_blocks=2,
+        dec_ctx=False,
+        class_cond=0,
+        shared_adaln=True,
+        concat_ctx=True,
+        use_dyt=False,
+        double_t=False,
+        addon_info_embs_dim=None,
+        tread_config=None,
+    ):
         super().__init__()
-        self.model = XUDiT(*args, **kwargs)
+        self.model = XUDiT(
+            patch_size=patch_size,
+            input_dim=input_dim,
+            dim=dim,
+            ctx_dim=ctx_dim,
+            ctx_size=ctx_size,
+            heads=heads,
+            dim_head=dim_head,
+            mlp_dim=mlp_dim,
+            depth=depth,
+            enc_blocks=enc_blocks,
+            dec_blocks=dec_blocks,
+            dec_ctx=dec_ctx,
+            class_cond=class_cond,
+            shared_adaln=shared_adaln,
+            concat_ctx=concat_ctx,
+            use_dyt=use_dyt,
+            double_t=double_t,
+            addon_info_embs_dim=addon_info_embs_dim,
+            tread_config=tread_config,
+        )
 
     @classmethod
     def from_config(cls, config: Dict[str, Any] | str) -> "XUDiTConditionModel":

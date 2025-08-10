@@ -488,8 +488,8 @@ class XUDiT(nn.Module):
                 y=t_emb,
                 shared_adaln=shared_adaln_state,
             )
-            if self.training or tread_rate:
-                xt_selection_length = selection_length = int(
+            if self.training or tread_rate is not None:
+                xt_selection_length = selection_length = length - int(
                     length * (tread_rate or self.dropout_ratio)
                 )
                 selection = torch.stack(
@@ -527,7 +527,7 @@ class XUDiT(nn.Module):
         if return_enc_out:
             backbone_out, enc_out = backbone_out
         if self.use_tread:
-            if self.training or tread_rate:
+            if self.training or tread_rate is not None:
                 out = torch.empty(
                     n, full_length, x.size(2), device=x.device, dtype=x.dtype
                 )

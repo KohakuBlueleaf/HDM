@@ -4,11 +4,12 @@ import torch
 import torch.nn as nn
 
 from diffusers import UNet2DConditionModel
-from diffusers.configuration_utils import register_to_config
+from diffusers.configuration_utils import ConfigMixin, register_to_config
+from diffusers.models.modeling_utils import ModelMixin
 from diffusers.models.unets.unet_2d_condition import UNet2DConditionOutput
 
 
-class BasicUNet(nn.Module):
+class BasicUNet(ModelMixin, ConfigMixin):
     def enable_gradient_checkpointing(self):
         raise NotImplementedError
 

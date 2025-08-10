@@ -36,7 +36,7 @@ from lycoris import create_lycoris
 
 
 torch._dynamo.config.recompile_limit = 1024
-torch._dynamo.config.accumulated_recompile_limit =  8192
+torch._dynamo.config.accumulated_recompile_limit = 8192
 torch.set_float32_matmul_precision("medium")
 warnings.filterwarnings("ignore", ".*sequence length is longer than.*")
 
@@ -71,9 +71,7 @@ def cfg_wrapper(
             "text_embeds": torch.concat([pool, neg_pool]),
         }
     else:
-        added_cond = {
-            "addon_info": torch.log(torch.tensor([width/height])).to(emb)
-        }
+        added_cond = {"addon_info": torch.log(torch.tensor([width / height])).to(emb)}
 
     if emb.size(1) > neg_emb.size(1):
         pad_setting = (0, 0, 0, emb.size(1) - neg_emb.size(1))
@@ -194,7 +192,7 @@ def main(config_path):
         latent_shift=dataset["latent_shift"],
         tokenizers=tokenizers,
         shuffle=True,
-        **dataset.get("base_kwargs", {})
+        **dataset.get("base_kwargs", {}),
     )
     loader = Data.DataLoader(
         ds,
@@ -277,7 +275,9 @@ def main(config_path):
         ).cpu()
         if "model_path" in model:
             state_dict = torch.load(model["model_path"], map_location="cpu")
-            missing, unexpected = trainer_model.load_state_dict(state_dict, strict=False)
+            missing, unexpected = trainer_model.load_state_dict(
+                state_dict, strict=False
+            )
             if unexpected:
                 print("Unexpected keys: ", unexpected)
 
