@@ -24,11 +24,21 @@ source venv/bin/activate
 # pip install -U torch torchvision xformers --index-url https://download.pytorch.org/whl/cu128
 # use [..., win] if you are using windows, e.g. [fused,tipo,win]
 pip install -e .[fused,tipo]
+```
+You can use `uv venv` and `uv pip install` as well which will be way more efficient.
 
+For Inference (gradio ui)
+```
 python ./scripts/inference_fm.py
 ```
 
-You can use `uv venv` and `uv pip install` as well which will be way more efficient.
+## Next Plan
+* UNet-based Hires-Fix/Refiner model
+    * new arch specially designed for adaptive resolution text-guided latent refiner
+* Use more general dataset (around 40M scale)
+    * Currently consider laion-coco-13m + gbc-10m + coyohd-11m + danbooru (total 40M)
+    * Will finetune from HDM-xut-340M 256px or 512px ckpt for testing this dataset
+* Pretrain a slightly larger model (see tech report, the XUT-large, 555M scale model)
 
 ## License
 This project is still under developement, therefore all the models, source code, text, documents or any media in this project are licensed under `CC-BY-NC-SA 4.0` until the finish of development.
