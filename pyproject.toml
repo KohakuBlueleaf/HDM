@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "HDM"
+version = "0.0.1"
+description = "Home made Diffusion Model"
+authors = [
+    { name = "Shih-Ying Yeh(KohakuBlueLeaf)", email = "apolloyeh0123@gmail.com" },
+]
+license = { text = "Apache-2.0" }
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "accelerate",
+    "torch",
+    "torchvision",
+    "einops",
+    "transformers>4.52",
+    "diffusers",
+    "lightning",
+    "wandb",
+    "imagesize",
+    "omegaconf",
+    "toml",
+    "anyschedule",
+    "gradio"
+]
+urls = { "Homepage" = "https://github.com/KohakuBlueleaf/HDM" }
+
+[project.optional-dependencies]
+fused = [
+    "xformers",
+    "liger-kernel"
+]
+win = [
+    "triton-windows"
+]
+tipo = [
+    "tipo-kgen",
+    "llama-cpp-python"
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
