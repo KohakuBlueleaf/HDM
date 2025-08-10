@@ -43,6 +43,9 @@ tipo = [
     "tipo-kgen",
     "llama-cpp-python"
 ]
+finetune = [
+    "lycoris-lora"
+]
 
 [tool.setuptools]
 package-dir = {"" = "src"}
