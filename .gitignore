@@ -2,7 +2,7 @@
 *.pt
 *.pth
 *.safetensors
-inferece_output/
+inference_output/
 models/
 
 # Byte-compiled / optimized / DLL files
