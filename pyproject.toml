@@ -32,6 +32,8 @@ urls = { "Homepage" = "https://github.com/KohakuBlueleaf/HDM" }
 [project.optional-dependencies]
 fused = [
     "xformers",
+]
+liger = [
     "liger-kernel"
 ]
 win = [

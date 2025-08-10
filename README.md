@@ -19,7 +19,11 @@ cd HDM
 python -m venv venv
 source venv/bin/activate
 # or venv\scripts\activate.ps1 for powershell
-pip install -e .[fused,win,tipo]
+
+# You may want to install pytorch by yourself
+# pip install -U torch torchvision xformers --index-url https://download.pytorch.org/whl/cu128
+# use [..., win] if you are using windows, e.g. [fused,tipo,win]
+pip install -e .[fused,tipo]
 
 python ./scripts/inference_fm.py
 ```
