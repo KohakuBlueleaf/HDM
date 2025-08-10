@@ -32,6 +32,11 @@ For Inference (gradio ui)
 python ./scripts/inference_fm.py
 ```
 
+For Finetuning/Training
+```
+python ./scripts/train.py <train toml config path>
+```
+
 ## Next Plan
 * UNet-based Hires-Fix/Refiner model
     * new arch specially designed for adaptive resolution text-guided latent refiner
