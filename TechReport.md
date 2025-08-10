@@ -194,11 +194,11 @@ We use four RTX5090 to pretrain our model with DDP.
 we disable TREAD in latest stage as suggested by the author of TREAD, which be claimed to be better for CFG generation.
 
 ### Pre-training cost
-Based on pricing information from vast.ai, renting four RTX5090 rig for 385hour require around 535 ~ 620 USD, also all of our pretraining are performed on self-hosted GPU server built with customer level (or second handed server hardware) only, provide an example, which means we push the lower bound of cost of pretraining 1024x1024 T2I model to a new level. (versus previous record around 1000~1500USD using datacenter GPUs)
+Based on pricing information from vast.ai, renting four RTX5090 rig for 385hour require around 535 ~ 620 USD, also all of our pretraining are performed on self-hosted GPU server built with customer level (or second handed server hardware) only, which means we push the lower bound of cost of pretraining 1024x1024 T2I model to a new level. (versus previous record around 1000~1500USD using datacenter GPUs)
 
 **NOTE**: All of our training are performed without latent cache or text embedding cache, as cache all the latent/text embedding will require larger disk space than image/caption which may beyond "customer level" range. But with less constrained hardware setup, achiving even lower compute cost is possible.
 
-(for example, caching all text embedding and f8c16 latent of our danbooru dataset require more than 12TB space with f16/bf16 precision. while the dataset only occupy 1.4~1.8TB on disk)
+(for example, caching all text embedding and f8c16 latent of our danbooru dataset require more than 12TB space with f16/bf16 precision. while the dataset only occupy 1.4~1.8TB on disk, and our next plan is to use 40M dataset which means the cache will be way more larger than this estimation as well)
 
 ## Results
 TBD
