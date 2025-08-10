@@ -1,4 +1,6 @@
 import os
+import sys
+import io
 import math
 import random
 import pickle
@@ -16,9 +18,6 @@ from PIL import Image
 from xut.modules.axial_rope import make_cropped_pos, make_axial_pos_no_cache
 
 
-SIZE = 768
-
-
 def get_files(folder):
     if os.path.isdir(folder):
         return [
@@ -33,10 +32,13 @@ def get_files(folder):
 def load_npy(path):
     with open(path, "rb") as f:
         raw_data = f.read()
-    with tempfile.NamedTemporaryFile() as tmp:
-        tmp.write(raw_data)
-        tmp.flush()
-        data = np.load(tmp.name, mmap_mode="r")
+    if sys.platform == "win32":
+        data = np.load(io.BytesIO(raw_data))
+    else:
+        with tempfile.NamedTemporaryFile() as tmp:
+            tmp.write(raw_data)
+            tmp.flush()
+            data = np.load(tmp.name, mmap_mode="r")
     return data
 
 
@@ -47,9 +49,14 @@ def load_pickle(path):
     return data
 
 
+def conver_rgb(x):
+    return x.convert("RGB")
+
+
 class KohyaDataset(Data.Dataset):
     def __init__(
         self,
+        size=1024,
         dataset_folder="/mp34-1/danbooru2023",
         transform=None,
         keep_token_seperator="|||",
@@ -61,13 +68,6 @@ class KohyaDataset(Data.Dataset):
         tag_dropout_rate=0.25,
         group_dropout_rate=0.3,
         use_cached_meta=True,
-        use_arb=False,
-        arb_config={
-            "batch_size": 64,
-            "target_res": 512,
-            "res_step": 16,
-            "seed": 0,
-        },
         meta_postfix="_filtered",
     ):
         self.dataset_folder = dataset_folder
@@ -93,74 +93,6 @@ class KohyaDataset(Data.Dataset):
             np.save(os.path.join(dataset_folder, f"metadata{meta_postfix}.npy"), files)
             print("Cached metadata generated and saved")
 
-        self.arb_config = arb_config
-        if (
-            use_arb
-            and os.path.isfile(
-                os.path.join(dataset_folder, f"arb_meta{meta_postfix}.pkl")
-            )
-            and use_cached_meta
-        ):
-            self.arb_meta = load_pickle(
-                os.path.join(dataset_folder, f"arb_meta{meta_postfix}.pkl")
-            )
-        elif use_arb:
-            print("Cached arb metadata not found, generating...")
-            target_res = arb_config["target_res"]
-            res_step = arb_config["res_step"]
-            arb_dict = defaultdict(list)
-            for file in tqdm(
-                self.files,
-                desc="Generating arb metadata",
-                smoothing=0.01,
-            ):
-                img_path = os.path.join(dataset_folder, file[0])
-                width, height = imagesize.get(img_path)
-                aspect_ratio = width / height
-                resized_width = target_res * aspect_ratio**0.5
-                resized_height = (
-                    int(resized_width / aspect_ratio) // res_step * res_step
-                )
-                resized_width = int(resized_width) // res_step * res_step
-                arb_dict[(resized_width, resized_height)].append(file)
-            self.arb_meta = [(k, v) for k, v in arb_dict.items()]
-            pickle.dump(
-                self.arb_meta,
-                open(os.path.join(dataset_folder, f"arb_meta{meta_postfix}.pkl"), "wb"),
-            )
-            print("Cached arb metadata generated and saved")
-        else:
-            self.arb_meta = None
-
-        if self.arb_meta is not None:
-            print("Generating arb batches...")
-            prog = tqdm(None, smoothing=0.01, desc="Generating arb batches")
-            self.batches = []
-            arb_batches = 0
-            sq_crop_batches = 0
-            rng_state = np.random.RandomState(arb_config["seed"])
-            for k, v in self.arb_meta:
-                v = np.array(v)
-                rng_state.shuffle(v)
-                rest = []
-                for i in range(0, len(v), arb_config["batch_size"]):
-                    batch_data = v[i : i + arb_config["batch_size"]]
-                    if len(batch_data) < arb_config["batch_size"]:
-                        rest.extend(batch_data)
-                    else:
-                        self.batches.append((k, batch_data))
-                        prog.update(1)
-                        arb_batches += 1
-                for i in range(0, len(rest), arb_config["batch_size"]):
-                    self.batches.append((None, rest[i : i + arb_config["batch_size"]]))
-                    prog.update(1)
-                    sq_crop_batches += 1
-            print(
-                f"Generated {arb_batches} arb batches and {sq_crop_batches} sq crop batches"
-            )
-        else:
-            self.batches = None
-
         self.keep_token_seperator = keep_token_seperator
         self.tag_seperator = tag_seperator
         self.seperator = seperator
@@ -170,10 +102,12 @@ class KohyaDataset(Data.Dataset):
         self.tag_dropout_rate = tag_dropout_rate
         self.group_dropout_rate = group_dropout_rate
 
+        self.size = size
         self.transform = transform or transforms.Compose(
             [
+                transforms.Lambda(conver_rgb),
                 transforms.Resize(
-                    SIZE, interpolation=transforms.InterpolationMode.BICUBIC
+                    size, interpolation=transforms.InterpolationMode.BICUBIC
                 ),
                 transforms.ToTensor(),
                 transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5), inplace=True),
@@ -181,8 +115,6 @@ class KohyaDataset(Data.Dataset):
         )
 
     def __len__(self):
-        if self.batches is not None:
-            return len(self.batches)
         return len(self.files)
 
     def get_caption(self, txt_file):
@@ -191,10 +123,14 @@ class KohyaDataset(Data.Dataset):
         with open(txt_file, "r", encoding="utf-8") as f:
             caption = f.read()
 
-        keep_tokens, rest = caption.split(self.keep_token_seperator)
-        keep_tokens = [
-            i.strip() for i in keep_tokens.split(self.tag_seperator) if i.strip()
-        ]
+        if self.keep_token_seperator in caption:
+            keep_tokens, rest = caption.split(self.keep_token_seperator)
+            keep_tokens = [
+                i.strip() for i in keep_tokens.split(self.tag_seperator) if i.strip()
+            ]
+        else:
+            keep_tokens = []
+            rest = caption
 
         groups = [i.strip() for i in rest.split(self.group_seperator) if i.strip()]
         if self.group_shuffle:
@@ -250,35 +186,8 @@ class KohyaDataset(Data.Dataset):
         return img, caption, pos_map, aspect_ratio
 
     def __getitem__(self, index):
-        if self.batches is None:
-            img_file, txt_file = self.files[index]
-            return self._getitem(img_file, txt_file)
-        else:
-            size, datas = self.batches[index]
-            if size is None:
-                imgs, captions, pos_maps, aspect_ratios = zip(
-                    *(self._getitem(*i) for i in datas)
-                )
-            else:
-                h, w = size
-                pos_maps = [make_axial_pos_no_cache(h, w).unflatten(0, (h, w))] * len(
-                    datas
-                )
-                aspect_ratios = [w / h] * len(datas)
-                imgs = []
-                captions = []
-                for img_file, txt_file in datas:
-                    img_t, caption = self.get_data_from_files(
-                        img_file, txt_file, (w, h)
-                    )
-                    imgs.append(img_t)
-                    captions.append(caption)
-
-            imgs = torch.stack(imgs)
-            pos_maps = torch.stack(pos_maps)
-            aspect_ratios = torch.tensor(aspect_ratios)
-
-            return imgs, captions, pos_maps, aspect_ratios
+        img_file, txt_file = self.files[index]
+        return self._getitem(img_file, txt_file)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,4 @@
 import random
-import multiprocessing as mp
-import weakref
 
 import numpy as np
 import torch
@@ -81,12 +79,9 @@ class CombineDataset(Data.Dataset):
         shuffle=True,
         arb_mode=False,
     ):
-        self.manager = mp.Manager()
         self.shuffle = shuffle
         self.datasets_ref = datasets
-        self.datasets = np.array(
-            [weakref.proxy(dataset) for dataset in datasets], dtype=object
-        )
+        self.datasets = datasets
         self.shard_string = sum(
             ([chr(i).encode()] * len(dataset) for i, dataset in enumerate(datasets)),
             [],

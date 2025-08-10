@@ -1,0 +1,63 @@
+[lightning]
+    seed=20090220
+    epochs=10
+    batch_size=8
+    dataloader_workers=4
+    persistent_workers=true
+    grad_acc=4
+    devices=1
+    precision="16-mixed"
+    grad_clip=1.0
+    grad_ckpt=true
+
+    [lightning.imggencallback]
+        id="HDM-xut-340M-finetune"
+        size=1024
+        num=32
+        preview_num=8
+        batch_size=4
+        steps=32
+        period=128
+    [lightning.logger]
+        name="HDM-xut-340M-finetune"
+        project="HDM"
+        offline=true
+
+
+[trainer]
+    name="test"
+    lr=0.1 # We have muP scale, need higher LR here
+    optimizer="torch.optim.AdamW"
+    opt_configs = {"weight_decay"= 0.01, "betas"= [0.9, 0.95]}
+    lr_sch_configs = {"end"= -1, "mode"= "cosine", "warmup"= 1000, "min_value"= 0.01}
+    te_use_normed_ctx=false
+
+
+[dataset]
+    [[dataset.datasets]]
+        class = "hdm.data.kohya.KohyaDataset"
+        [dataset.datasets.kwargs]
+            size=1024
+            dataset_folder = "F:/dataset/multi_artist"
+            keep_token_seperator="|||"
+            tag_seperator=", "
+            seperator=", "
+            group_seperator="%%"
+            tag_shuffle=true
+            group_shuffle=false
+            tag_dropout_rate=0.0
+            group_dropout_rate=0.0
+            use_cached_meta=true
+            # For example:
+            # "xxx, zzz ||| aa $$ bb %% cc $$ dd" -> "xxx, zzz, aa, bb, dd, cc"
+
+
+[model]
+    config="./config/model/xut-qwen3-sm-tread.yaml"
+    model_path="./models/hdm-xut-340M-1024px.ckpt"
+    inference_dtype = "torch.float16"
+    [model.lycoris]
+        algo = "lokr"
+        factor = 4
+        full_matrix = true
+        train_norm = true
