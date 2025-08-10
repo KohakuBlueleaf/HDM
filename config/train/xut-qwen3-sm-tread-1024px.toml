@@ -1,0 +1,57 @@
+[lightning]
+    seed=20090220
+    epochs=1
+    # 32 * 4gpu * grad acc2 = 256
+    batch_size=1
+    dataloader_workers=8
+    persistent_workers=true
+    grad_acc=2
+    devices=4
+    precision="16-mixed"
+    grad_clip=1.0
+    grad_ckpt=true
+
+    [lightning.imggencallback]
+        id="XUT-0.35B-Qwen3-0.6B-256px-patch2-tread-1024px"
+        num=32
+        preview_num=8
+        batch_size=8
+        steps=32
+        period=512
+    [lightning.logger]
+        name="XUT-0.35B-Qwen3-0.6B-256px-patch2-tread-1024px"
+        project="HomeDiffusion"
+        # offline=true
+
+
+[trainer]
+    name="test"
+    lr=0.05 # muP base dim=1, 0.05 ~= 5e-5/1e-5
+    optimizer="torch.optim.AdamW"
+    opt_configs = {"weight_decay"= 0.002, "betas"= [0.9, 0.995]}
+    lr_sch_configs = {"end"= -1, "mode"= "cosine", "warmup"= 1000, "min_value"= 0.01}
+    te_use_normed_ctx=false
+
+
+[dataset]
+    [[dataset.base_kwargs]]
+        arb_mode = true
+    [[dataset.datasets]]
+        class = "hdm.data.kohya.KohyaDataset"
+        [dataset.datasets.kwargs]
+            dataset_folder = "/mp34-1/danbooru2023"
+            keep_token_seperator="|||"
+            tag_seperator="$$"
+            seperator=", "
+            group_seperator="%%"
+            tag_shuffle=true
+            group_shuffle=true
+            tag_dropout_rate=0.25
+            group_dropout_rate=0.3
+            use_cached_meta=true
+
+
+[model]
+    ckpt_path="HomeDiffusion/da20864c/checkpoints/epoch=0-step=16541.ckpt"
+    config="./config/model/xut-qwen3-sm-tread.yaml"
+    inference_dtype = "torch.float16"

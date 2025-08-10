@@ -1,0 +1,19 @@
+{
+    "patch_size":2,
+    "input_dim":4,
+    "dim":1024,
+    "ctx_dim":1024,
+    "ctx_size":256,
+    "heads":16,
+    "dim_head":64,
+    "mlp_dim":3072,
+    "depth":4,
+    "enc_blocks":1,
+    "dec_blocks":3,
+    "tread_config": {
+        "prev_trns_depth": 1,
+        "post_trns_depth": 3,
+        "dropout_ratio": 0.5
+    },
+    "addon_info_embs_dim": 1
+}

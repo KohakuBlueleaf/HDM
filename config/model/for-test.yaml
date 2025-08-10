@@ -1,0 +1,43 @@
+unet:
+  class: hdm.modules.unet_patch.HDUNet2DConditionModel
+  factory: from_config
+  args:
+  - ./config/arch/266m.json
+te_class: hdm.modules.text_encoders.ConcatTextEncoders
+te_config:
+  tokenizers:
+  - apple/DFN5B-CLIP-ViT-H-14-378
+  - EleutherAI/pile-t5-large
+  text_models:
+  - model:
+      class: transformers.CLIPTextModel
+      factory: from_pretrained
+      args:
+      - apple/DFN5B-CLIP-ViT-H-14-378
+    disable_autocast: false
+    concat_buckets: 0
+    use_pooled: false
+    need_mask: false
+    layer_idx: -2
+  - model:
+      class: transformers.UMT5EncoderModel
+      factory: from_pretrained
+      args:
+      - EleutherAI/pile-t5-large
+    disable_autocast: false
+    concat_buckets: 1
+    use_pooled: false
+    need_mask: true
+    layer_idx: -1
+  zero_for_padding: false
+  max_length: 179 # 179+77 = 256
+vae:
+  class: diffusers.AutoencoderKL
+  factory: from_pretrained
+  args:
+  - madebyollin/sdxl-vae-fp16-fix
+scheduler:
+  class: diffusers.EulerDiscreteScheduler
+  factory: from_pretrained
+  args:
+  - ./schedulers/laplace-1_0-cut-head

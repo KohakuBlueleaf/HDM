@@ -1,0 +1,76 @@
+[lightning]
+    seed=20090220
+    epochs=20
+    batch_size=128
+    dataloader_workers=12
+    persistent_workers=true
+    grad_acc=4
+    devices=4
+    precision="16-mixed"
+    grad_clip=3.0
+    grad_ckpt=true
+
+    [lightning.imggencallback]
+        id="XUT-0.35B-Qwen3-0.6B-256px-patch2-tread"
+        num=64
+        preview_num=8
+        batch_size=64
+        steps=32
+        period=512
+    [lightning.logger]
+        name="XUT-0.35B-Qwen3-0.6B-256px-patch2-tread"
+        project="HomeDiffusion"
+        offline=false
+
+
+[trainer]
+    name="test"
+    lr=0.5 # We have muP scale, need higher LR here
+    optimizer="torch.optim.AdamW"
+    opt_configs = {"weight_decay"= 0.02, "betas"= [0.9, 0.98]}
+    lr_sch_configs = {"end"= -1, "mode"= "cosine", "warmup"= 1000, "min_value"= 0.01}
+    te_use_normed_ctx=false
+
+
+[dataset]
+    # dataset may need different scale/shift from model
+    # scaling_factor = 0.13350    # calc on coyo+cc+dan
+    # latent_shift = -0.18        # calc on coyo+cc+dan
+    [[dataset.datasets]]
+        class = "hdm.data.danbooru512.Danbooru512Dataset"
+        [dataset.datasets.kwargs]
+            dataset_folder = "/mnt/mp44l/nn/datasets/danbooru-512"
+            load_meta=false
+    # [[dataset.datasets]]
+    #     class = "hdm.data.danbooru.DanbooruDataset"
+    #     [dataset.datasets.kwargs]
+    #         use_duckdb = false
+    #         use_lance = false
+    #         shuffle = true
+    #         dataset_folder = "Y:/latent-caching/latents-danbooru"
+    # [[dataset.datasets]]
+    #     class = "hdm.data.coyo11m.Coyo11MDataset"
+    #     [dataset.datasets.kwargs]
+    #         use_duckdb = false
+    #         use_iloc = true
+    #         shuffle = true
+    #         dataset_folder = "Y:/latent-caching/latents-coyo11m"
+    # [[dataset.datasets]]
+    #     class = "hdm.data.cc12m.CC12MwithGBC10MDataset"
+    #     [dataset.datasets.kwargs]
+    #         use_duckdb = true
+    #         shuffle = true
+    #         dataset_folder = "Y:/latent-caching/latents-cc12m"
+
+
+[model]
+    # ckpt_path="HomeDiffusion/326ee5ec/checkpoints/epoch=2-step=177825.ckpt"
+    # ckpt_path="HomeDiffusion/2614808e/checkpoints/epoch=4-step=37000.ckpt"
+    # ckpt_path="HomeDiffusion/21d40117/checkpoints/epoch=4-step=37230.ckpt"
+    #ckpt_path="HomeDiffusion/6f848498/checkpoints/epoch=2-step=20000.ckpt"
+    # ckpt_path="HomeDiffusion/b5be790a/checkpoints/epoch=0-step=250.ckpt"
+    # ckpt_path="./models/xut-base-1536-concat-qwen-512x512-1250step.ckpt"
+    # ckpt_path="HomeDiffusion/0f5af87d/checkpoints/epoch=5-step=10000.ckpt"
+    # ckpt_path="HomeDiffusion/a5115746/checkpoints/epoch=1-step=7446.ckpt"
+    config="./config/model/xut-qwen3-sm-tread.yaml"
+    inference_dtype = "torch.float16"

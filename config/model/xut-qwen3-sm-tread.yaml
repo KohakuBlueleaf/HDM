@@ -1,0 +1,31 @@
+type: flow
+unet:
+  class: hdm.modules.xut.XUDiTConditionModel
+  factory: from_config
+  args:
+  - ./config/arch/xut-small-1024-tread.json
+te_class: hdm.modules.text_encoders.ConcatTextEncoders
+te_config:
+  tokenizers:
+  - Qwen/Qwen3-0.6B
+  text_models:
+  - model:
+      class: transformers.Qwen3Model
+      factory: from_pretrained
+      args:
+      - Qwen/Qwen3-0.6B
+      kwargs:
+        torch_dtype: "float16"
+        attn_implementation: sdpa #flash_attention_2
+    disable_autocast: false
+    concat_buckets: 0
+    use_pooled: false
+    need_mask: false
+    layer_idx: -1
+  zero_for_padding: false
+  max_length: 384
+vae:
+  class: diffusers.AutoencoderKL
+  factory: from_pretrained
+  args:
+  - KBlueLeaf/EQ-SDXL-VAE

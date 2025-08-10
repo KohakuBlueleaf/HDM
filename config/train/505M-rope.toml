@@ -1,0 +1,56 @@
+[lightning]
+    epochs=1
+    batch_size=4
+    dataloader_workers=0
+    grad_acc={0=1, 1=4, 2=16} # epoch: grad_acc
+    devices=[0]
+    precision="16-mixed"
+    grad_clip=0.1
+    grad_ckpt=true
+
+    [lightning.imggencallback]
+        num=4
+        steps=32
+        period=10
+    [lightning.logger]
+        name="504M-CLIP-T5-concat-rotary-emb-test"
+        project="HomeDiffusion"
+        version="" # Empty for random id
+        offline=false
+
+
+[trainer]
+    name="test"
+    lr=1e-4
+    optimizer="torch.optim.AdamW"
+    opt_configs = {"weight_decay"= 0.01, "betas"= [0.9, 0.98]}
+    lr_scheduler = "torch.optim.lr_scheduler.CosineAnnealingLR"
+    use_warm_up=false
+    te_use_normed_ctx=false
+
+
+[dataset]
+    [[dataset.datasets]]
+        class = "hdm.data.danbooru.DanbooruDataset"
+        shuffle = true
+    [[dataset.datasets]]
+        class = "hdm.data.coyo11m.Coyo11MDataset"
+        shuffle = true
+    [[dataset.datasets]]
+        class = "hdm.data.cc12m.CC12MwithGBC10MDataset"
+        shuffle = true
+    # datasets = [
+    #     {class = "hdm.data.danbooru.DanbooruDataset", kwargs = {shuffle = true}},
+    #     # {class = "hdm.data.coyo11m.Coyo11MDataset", kwargs = {shuffle = true}},
+    #     # {class = "hdm.data.cc12m.CC12MwithGBC10MDataset", kwargs = {shuffle = true}},
+    # ]
+    scaling_factor = 0.13350    # calc on coyo+cc+dan
+    latent_shift = -0.18        # calc on coyo+cc+dan
+    # dataset may need different scale/shift from model
+
+
+[model]
+    config="./config/model/505M-rope.yaml"
+    scaling_factor = 0.13350    # calc on coyo+cc+dan
+    latent_shift = -0.18        # calc on coyo+cc+dan
+    inference_dtype = "torch.float16"
