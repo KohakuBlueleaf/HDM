@@ -185,9 +185,10 @@ We use four RTX5090 to pretrain our model with DDP.
 *: extra set include some internal dataset such as photo of pvc figure, or filtered pixiv famous artist set.
 
 **: curated set using Danbooru 2023 and only choose image who fulfill all of following filter
-    * Is "masterpiece", "best quality", "low quality", "worst quality"
-    * Is "newest", "recent", "old"
-    * we use those filter to emphasize the effect of negative prompt
+:
+* Is "masterpiece", "best quality", "low quality", "worst quality"
+* Is "newest", "recent", "old"
+* we use those filter to emphasize the effect of negative prompt
 
 
 we disable TREAD in latest stage as suggested by the author of TREAD, which be claimed to be better for CFG generation.
