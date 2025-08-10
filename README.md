@@ -9,7 +9,7 @@ HDM project targeting providing a small but usable base model that can be used f
     * fused: install xformers/liger-kernel for fused operation
     * win: install triton-windows for torch.compile to work
     * tipo: install tipo-kgen and llama.cpp for TIPO prompt gen
-* download model file `hdm-xut-340M-1024px.ckpt` to `./models` folder
+* download model file [`hdm-xut-340M-1024px.ckpt`](https://arozos.kblueleaf.net/share/dc426f15-bfdc-4dc4-8cd1-20363816fc24/) to `./models` folder
 * start the gradio app
 
 For example:
