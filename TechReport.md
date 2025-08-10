@@ -143,7 +143,7 @@ Here is examples on shift/zoom the position map:
 To obtain efficient pretraining and inference with consumer level hardwares. We try to make the model as small as possible. We propose 2 different scale of HDM backbone as following
 
 |hyperparam| XUT-base | XUT-large |
-|-| - | - |-|
+|-| - | - |
 |dim|1024|1280|
 |ctx dim(TE model)|1024 (Qwen3-0.6B)|1152 (Gemma3-1B)|
 |mlp dim|3072|4096|
