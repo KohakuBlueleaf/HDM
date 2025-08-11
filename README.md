@@ -10,7 +10,7 @@ HDM project targeting providing a small but usable base model that can be used f
     * win: install triton-windows for torch.compile to work
     * tipo: install tipo-kgen and llama.cpp for TIPO prompt gen
 * download model file [`hdm-xut-340M-1024px.ckpt`](https://arozos.kblueleaf.net/share/dc426f15-bfdc-4dc4-8cd1-20363816fc24/) to `./models` folder
-* start the gradio app
+* start the gradio app or check the diffusers pipeline inference script
 
 For example:
 ```bash
@@ -27,9 +27,12 @@ pip install -e .[fused,tipo]
 ```
 You can use `uv venv` and `uv pip install` as well which will be way more efficient.
 
-For Inference (gradio ui)
+For Inference 
 ```
+# (gradio ui)
 python ./scripts/inference_fm.py
+# diffusers pipeline
+python ./scripts/inference_diffusers.py
 ```
 
 For Finetuning/Training
