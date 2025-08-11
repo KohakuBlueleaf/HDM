@@ -2,12 +2,12 @@ import math
 from functools import lru_cache
 
 import torch
-import torch._dynamo
 from torch import nn
 
 from ..utils import compile_wrapper
 
 
+@compile_wrapper
 def rotate_half(x):
     x1, x2 = x[..., 0::2], x[..., 1::2]
     x = torch.stack((-x2, x1), dim=-1)
@@ -141,6 +141,7 @@ class AxialRoPE(nn.Module):
         freqs = freqs.flatten(-2, -1).repeat_interleave(2, dim=-1)
         return freqs.transpose(-2, -3)
 
+    @compile_wrapper
     def forward(self, x, pos):
         freqs = self.get_freqs(pos)
         return apply_rotary_emb(freqs, x, self.start_index)
