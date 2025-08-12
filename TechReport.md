@@ -35,7 +35,9 @@ $\frac{dx}{dt} = v_t(x)$
 
 where $v_t(x)$ is a learned vector field. The flow matching objective minimizes:
 
-$\mathcal{L}\_{FM} = \mathbb{E}\_{t,x\_0,x_1}\|v_\theta(x_t, t) - (x_1 - x_0)\|^2$
+$$
+\mathcal{L}_{FM} = \mathbb{E}_{t,x_0,x_1}\|v_\theta(x_t, t) - (x_1 - x_0)\|^2
+$$
 
 This formulation can achieve similar results with potentially improved training dynamics and sampling efficiency.
 
@@ -125,8 +127,8 @@ This formulation enables arbitrary aspect ratio handling while maintaining consi
 
 $$
 \text{RoPE}(x, pos) = \begin{pmatrix} 
-   x\_1 \cos(pos/\theta\_1) - x\_2 \sin(pos/\theta\_1) \\ 
-   x_1 \sin(pos/\theta\_1) + x\_2 \cos(pos/\theta\_1) \\ 
+   x_1 \cos(pos/\theta_1) - x_2 \sin(pos/\theta_1) \\ 
+   x_1 \sin(pos/\theta_1) + x_2 \cos(pos/\theta_1) \\ 
    \vdots 
 \end{pmatrix}
 $$
