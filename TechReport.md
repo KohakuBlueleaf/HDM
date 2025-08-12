@@ -35,7 +35,7 @@ $\frac{dx}{dt} = v_t(x)$
 
 where $v_t(x)$ is a learned vector field. The flow matching objective minimizes:
 
-$\mathcal{L}_{FM} = \mathbb{E}_{t,x_0,x_1}\|v_\theta(x_t, t) - (x_1 - x_0)\|^2$
+$\mathcal{L}\_{FM} = \mathbb{E}\_{t,x\_0,x_1}\|v_\theta(x_t, t) - (x_1 - x_0)\|^2$
 
 This formulation can achieve similar results with potentially improved training dynamics and sampling efficiency.
 
