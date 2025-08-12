@@ -23,7 +23,7 @@ Our approach centers on a UViT/HDiT-inspired architecture [3,4] enhanced with no
 
 Diffusion models have emerged as the dominant paradigm for high-quality image generation. The foundational DDPM framework [5] establishes a forward noising process that gradually corrupts data with Gaussian noise:
 
-$q(x_t|x_{t-1}) = \mathcal{N}(x_t; \sqrt{1-\beta_t}x_{t-1}, \beta_t I)$
+$q(x_t|x_{t-1}) = \mathcal{N}(x_t; \sqrt{1-\alpha_t}x_{t-1}, \alpha_t I)$
 
 and a learned reverse process that generates samples by iteratively denoising:
 
@@ -49,12 +49,12 @@ The evolution of text encoders in diffusion models has progressed through severa
 
 Standard Diffusion Transformers (DiT) [10] prove insufficient for complex image generation tasks. Following UNet principles, we adopt U-shaped transformer architectures that combine the benefits of hierarchical feature learning with transformer scalability. UViT and HDiT represent two distinct philosophical approaches to U-shaped transformers:
 
-- **UViT** [3] maintains consistent resolution throughout the network, relying solely on U-shaped connections to facilitate multi-scale feature learning
-- **HDiT** [4] incorporates explicit downsampling/upsampling operations and employs local attention mechanisms (NATTEN) in higher-resolution layers while using global attention in lower-resolution layers
+- **UViT** [3] maintains consistent resolution throughout the network, relying solely on U-shaped connections to facilitate multi-scale feature learning. UViT also propose that all the condition information (include timesteps, class condition, text condition and more) should be treated as input tokens. Instead of using adaLN or cross-attention. But HunYuan-DiT, a open sourced T2I base model which utilize UViT architecture, still used adaLN and cross-attention for text condition.
+- **HDiT** [4] incorporates explicit downsampling/upsampling operations and employs local attention mechanisms (NATTEN) in higher-resolution layers while using global attention in lower-resolution layers to provide significant speed up (compare to standard DiT). This approach provide a more UNet-like intuition on multi-scale feature learning.
 
 ### 2.4 Efficient Pretraining Strategies
 
-Recent advances in efficient diffusion training include several notable approaches. SANA [11] achieves dramatic sequence length reduction through DC-AE compression and employs linear attention to avoid quadratic complexity, though with some quality trade-offs. REPA/REPA-E [12] focus on convergence acceleration but are not specifically designed for extremely constrained training budgets. TREAD [13] provides both convergence acceleration and step speed improvements, making it particularly suitable for resource-constrained scenarios.
+Recent advances in efficient diffusion training include several notable approaches. SANA [11] achieves dramatic sequence length reduction through DC-AE compression and employs linear attention to avoid quadratic complexity, though with some notable quality trade-offs. REPA/REPA-E [12] focus on convergence acceleration but are not specifically designed for extremely constrained training budgets. TREAD [13] provides both convergence acceleration and step speed improvements, making it particularly suitable for resource-constrained scenarios.
 
 ## 3. HDM Methodology
 
@@ -66,7 +66,7 @@ Recent advances in efficient diffusion training include several notable approach
 
 Our XUT architecture draws inspiration from UViT/HDiT while introducing a novel approach to skip connections. We conceptualize the U-shaped architecture as: encoder → middle → decoder with feature merging. Traditional implementations typically use concatenation or addition for the merge operation. In XUT, we employ cross-attention to perform feature merging, leading us to term this the Cross-U-Transformer (XUT).
 
-The architecture repeats this abstract pattern $n_{\text{depth}}$ times, with each depth containing $n_{\text{enc}}$ encoder blocks and $n_{\text{dec}}$ decoder blocks. This results in $(n_{\text{enc}} + n_{\text{dec}}) \times n_{\text{depth}}$ transformer blocks total, plus $n_{\text{depth}}$ cross-attention blocks placed in the first decoder transformer block of each depth.
+The architecture repeats this abstract pattern $n_{\text{depth}}$ times, with each depth containing $n_{\text{enc}}$ transformer blocks in encoder and $n_{\text{dec}}$ transformer blocks in decoder. This results in $(n_{\text{enc}} + n_{\text{dec}}) \times n_{\text{depth}}$ transformer blocks total, plus $n_{\text{depth}}$ cross-attention blocks placed in the first decoder transformer block of each depth.
 
 Formally, for depth level $d$, we define:
 
@@ -76,12 +76,12 @@ $h_d^{\text{dec}} = \text{CrossAttn}(h_d^{\text{enc}}, h_{n_{\text{depth}}-d}^{\
 
 where $h_0^{\text{out}}$ represents the input features and cross-attention enables selective information transfer from corresponding encoder depths.
 
-For example, with $n_{\text{enc}}=1$, $n_{\text{dec}}=2$, $n_{\text{depth}}=3$:
+For example, with $n_{\text{enc}}=1$, $n_{\text{dec}}=2$, $n_{\text{depth}}=2$:
 ```
-input → trns → a → trns → b → trns → c → trns(c,c) → d → trns(d,b) → e → trns(e,a) → output
+input → trns → a → trns → b → trns(b,b) → c → trns → c' → trns(c',a) → d → trns → output
 ```
 
-where $a, b, c, d, e$ represent hidden states and trns denotes transformer blocks with cross-attention when specified.
+where $a, b, c, d$ represent hidden states and trns denotes transformer blocks with cross-attention when specified in trns(q, kv) form.
 
 **Rationale for Cross-Attention**: U-shaped skip connections facilitate multi-scale feature learning by transmitting early features to later layers. In transformer architectures, cross-attention provides the most intuitive mechanism for "sending features" between distant layers, offering superior semantic understanding compared to naive concatenation or addition.
 
@@ -101,7 +101,7 @@ Modern text-to-image models employ various strategies for handling text and imag
 
 HDM pursues architectural minimalism by directly concatenating text and image features as input to the entire backbone. This approach aligns with UViT's philosophy of incorporating class tokens and timestep tokens into the input sequence, though we retain adaLN for conditional information.
 
-**Shared adaLN Innovation**: We implement shared adaLN across all layers. Traditional adaLN applies layer-specific modulation:
+**Shared adaLN**: As same as DiT-air or Chroma, We implement shared adaLN across all layers. Traditional adaLN applies layer-specific modulation:
 
 $\text{adaLN}^{(l)}(x, c) = \gamma^{(l)}(c) \odot \frac{x - \mu(x)}{\sigma(x)} + \beta^{(l)}(c)$
 
@@ -111,7 +111,7 @@ Our shared adaLN uses global parameters across all layers:
 
 $\text{adaLN}_{\text{shared}}(x, c) = \gamma(c) \odot \frac{x - \mu(x)}{\sigma(x)} + \beta(c)$
 
-where $\gamma(c)$ and $\beta(c)$ are generated by a single learned MLP from input conditions (timestep and other conditioning). This strategy, similar to approaches used in Chroma (a pruned Flux variant achieving 33% parameter reduction with maintained capacity), significantly reduces parameters while preserving performance [15].
+where $\gamma(c)$ and $\beta(c)$ are generated by a single learned MLP from input conditions (timestep and other conditioning). This strategy significantly reduces parameters while preserving performance [15].
 
 ### 3.4 Positional Encoding Strategy
 
@@ -201,7 +201,11 @@ This capability emerges naturally from our training strategy and positional enco
 | ![](images/example/ComfyUI_02233_.png) | ![](images/example/ComfyUI_02232_.png) | ![](images/example/ComfyUI_02234_.png) |
 
 
-*Table 1: Demonstration of position map manipulation effects on generated images. Top rows show x-axis shifts (left: +0.25, center: no shift, right: -0.25), middle rows show y-axis shifts (left: +0.25, center: no shift, right: -0.25), and bottom row shows zoom effects (left: 0.75x, center: no zoom, right: 1.33x). These examples illustrate the camera-like control achievable through position map manipulation.*
+*Table 1: Demonstration of position map manipulation effects on generated images.
+<br>Top table show x-axis shifts (left: +0.25, center: no shift, right: -0.25)
+<br>middle table show y-axis shifts (left: +0.25, center: no shift, right: -0.25)
+<br>bottom table shows zoom effects (left: 0.75x, center: no zoom, right: 1.33x)
+<br>These examples illustrate the camera-like control achievable through position map manipulation.*
 
 ## 4. Training
 
