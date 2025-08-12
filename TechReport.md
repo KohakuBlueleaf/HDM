@@ -123,7 +123,13 @@ $r_H = \sqrt{\frac{H}{W}}, \quad r_W = \sqrt{\frac{W}{H}}$
 
 This formulation enables arbitrary aspect ratio handling while maintaining consistent positional encoding properties. We apply 2D axial RoPE [16] to the first half of dimensions:
 
-$\text{RoPE}(x, pos) = \begin{pmatrix} x_1 \cos(pos/\theta_1) - x_2 \sin(pos/\theta_1) \\ x_1 \sin(pos/\theta_1) + x_2 \cos(pos/\theta_1) \\ \vdots \end{pmatrix}$
+$$
+\text{RoPE}(x, pos) = \begin{pmatrix} 
+   x\_1 \cos(pos/\theta\_1) - x\_2 \sin(pos/\theta\_1) \\ 
+   x_1 \sin(pos/\theta\_1) + x\_2 \cos(pos/\theta\_1) \\ 
+   \vdots 
+\end{pmatrix}
+$$
 
 For text sequences, we employ NoPE (No Position Embedding) [17], as the causal attention mechanism's inherent property of later tokens attending to more previous tokens provides implicit positional information.
 
