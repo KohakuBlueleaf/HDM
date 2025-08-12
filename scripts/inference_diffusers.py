@@ -1,13 +1,12 @@
 import os
 import torch
-from diffusers import DiffusionPipeline
+from hdm.pipeline import HDMXUTPipeline
 
 
 torch.set_float32_matmul_precision("high")
 pipeline = (
-    DiffusionPipeline.from_pretrained(
-        "KBlueLeaf/HDM-xut-340M-anime", 
-        custom_pipeline="KBlueLeaf/HDM-xut-340M-anime",
+    HDMXUTPipeline.from_pretrained(
+        "KBlueLeaf/HDM-xut-340M-anime",
     )
     .to("cuda:0")
     .to(torch.float16)
