@@ -1,4 +1,6 @@
 import os
+import sys
+sys.path.append(".")
 import json
 from PIL import Image, ExifTags
 from template.content_template import (

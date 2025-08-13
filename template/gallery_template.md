@@ -1,4 +1,5 @@
 
+
 <style>
 .gallery-container {
     position: relative;
@@ -115,7 +116,7 @@
 .content-area {
     position: relative;
     width: 100%;
-    min-height: 800px;
+    min-height: 780px;
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
@@ -132,8 +133,6 @@
     visibility: hidden;
     transition: opacity 0.5s ease;
     background: white;
-    display: flex;
-    flex-direction: column;
 }
 
 .slide.active {
@@ -143,7 +142,7 @@
 
 .slide-background-image {
     width: 100%;
-    height: 600px;
+    height: 480px;
     object-fit: cover;
     border-radius: 10px 10px 0 0;
     filter: blur(3px) brightness(25%);
@@ -160,7 +159,7 @@
 .slide-image-container {
     position: relative;
     width: 100%;
-    height: 600px;
+    height: 480px;
     overflow: hidden;
     border-radius: 10px 10px 0 0;
 }
@@ -199,6 +198,7 @@
     color: #aaa;
     /* line-height: 1.6; */
 }
+
 
 /* CSS selectors to show active slides */
 {selectors} {
