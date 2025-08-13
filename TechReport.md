@@ -207,6 +207,8 @@ This capability emerges naturally from our training strategy and positional enco
 <br>bottom table shows zoom effects (left: 0.75x, center: no zoom, right: 1.33x)
 <br>These examples illustrate the camera-like control achievable through position map manipulation.*
 
+**Auto-Guidance with TREAD selection mechanism**: Intuitively, a model with TREAD selection enabled can direclty be seen as a weaker version of itself. With the idea of Auto-Guidance[19] and suggested in the official code of TREAD[20], we use TREAD selection rate for cond(cr) and uncond(ur) to have cr < ur and cr < 0.5 (TREAD selection rate in Training)
+
 ## 4. Training
 
 ### 4.1 Model Scale
@@ -309,6 +311,10 @@ TBD
 [17] Kazemnejad, A., et al. "The impact of positional encoding on length generalization in transformers." arXiv preprint arXiv:2404.12224, 2024.
 
 [18] Ando, R., et al. "Patch diffusion: Faster and more data-efficient training of diffusion models." arXiv preprint arXiv:2304.12526, 2023.
+
+[19] Tero Karras, Miika Aittala, Tuomas Kynkäänniemi, Jaakko Lehtinen, Timo Aila, & Samuli Laine. (2024). Guiding a Diffusion Model with a Bad Version of Itself.
+
+[20] https://github.com/CompVis/tread/blob/master/inference.py
 
 ## Appendix
 
