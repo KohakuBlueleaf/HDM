@@ -179,6 +179,7 @@ def generate(
     neg_prompts_batch = negative_prompts_to_generate
 
     # Core logic from the original script
+    device = trainer_model.device
     unet = trainer_model.unet
     te = trainer_model.te
     vae = trainer_model.vae
@@ -255,7 +256,7 @@ def generate(
 def ui():
     # --- Gradio UI Definition ---
     with gr.Blocks(title="HDM Demo", theme=gr.themes.Soft()) as demo:
-        gr.Markdown("# HDM Early Demo")
+        gr.Markdown("# HDM Demo")
         gr.Markdown(
             "### Enter a natural language prompt and/or specific tags to generate an image."
         )
@@ -434,7 +435,7 @@ def main():
     model_name = "./models/hdm-xut-340M-1024px.ckpt"
     run_name = "xut-small-qwen3-1024px"
     dtype = torch.float16 if torch.cuda.is_available() else torch.float32
-    device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+    device = torch.device("cuda:0") if torch.cuda.is_available() else torch.device("cpu")
 
     unet, te, tokenizers, vae, scheduler = load_model(
         omegaconf.OmegaConf.to_container(
