@@ -149,7 +149,7 @@ class HDMXUTPipeline(DiffusionPipeline):
                 negative_prompt_emb,
                 added_cond_kwargs={
                     "addon_info": aspect_ratio,
-                    "tread_rate": 0.25,
+                    "tread_rate": 0.5,
                 },
             ).sample
             cfg_flow = uncond + cfg_scale * (cond - uncond)

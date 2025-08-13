@@ -7,6 +7,7 @@ torch.set_float32_matmul_precision("high")
 pipeline = (
     HDMXUTPipeline.from_pretrained(
         "KBlueLeaf/HDM-xut-340M-anime",
+        trust_remote_code=True
     )
     .to("cuda:0")
     .to(torch.float16)
@@ -20,14 +21,14 @@ with torch.autocast("cuda", torch.float16):
         [
             """
 1girl, 
-makaino ririmu (3rd costume), makaino ririmu, nijisanji, 
-suzue moka, 
+m4 sopmod ii (mod3) (girls' frontline), m4 sopmod ii (girls' frontline), girls' frontline, 
+zi ye (hbptcsg2), 
 
-very long hair, multicolored hair, long hair, closed mouth, collar, solo, looking at viewer, sky, collarbone, belt collar, demon wings, sidelocks, polka dot, grey hair, red wings, red hair, streaked hair, blush, standing, blue background, bare shoulders, red eyes, strap slip, polka dot background, hair down, dress, sleeveless, blunt bangs, sleeveless dress, straight hair, white dress, pointy ears, flat chest, lace trim, cowboy shot, red collar, sundress, wings, day, fang, smile, bare arms, simple background, lace-trimmed dress, virtual youtuber, hand on own hip, fang out, two-tone hair, ahoge, arm behind head, armpit crease, two side up, arm up,
+multicolored hair, torn clothes, solo, sand, wide shot, hair between eyes, smile, outdoors, beach, scenery, looking at viewer, dusk, coat, open mouth, cloudy sky, streaked hair, satellite dish, red hair, cityscape, cloud, headgear, sidelocks, ocean, black coat, gloves, floating hair, waves, long hair, wind, torn coat, standing, red eyes, pink hair, sky, city lights, building, skyscraper,
 
-a vibrant illustration by the artist suzue moka, known for their distinctive style in character design and color usage. The central figure is Makaino Ririmu from the Nijisanji series, depicted with her signature long pink hair adorned with red ribbons. Her pose is confident, with one arm resting behind her head and the other on her hip. The overall composition captures a sense of energy and charm characteristic of suzue moka's artistic style.
+A young girl with long blonde hair, wearing a red and black outfit with horns on her head. the sky is filled with stars and planets, and there are two large satellite dishes on either side of the girl's head. in the background, there is a cityscape with tall buildings and skyscrapers. the overall mood of the image is peaceful and serene.
 
-masterpiece, newest, absurdres
+masterpiece, newest, commentary, photoshop (medium), absurdres
 """.strip().replace(
                 "\n", " "
             )
@@ -41,8 +42,8 @@ realistic, 2girls, 3girls, multiple girls, crop top, cropped head, cropped
 """.strip().replace(
             "\n", " "
         ),
-        width=1024,
-        height=2048,
+        width=1536,
+        height=864,
         cfg_scale=3.0,
         num_inference_steps=32,
     )
