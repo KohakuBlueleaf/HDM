@@ -2,6 +2,9 @@
 HDM is a series of models that trained diffusion models (flow matching) from scratch with consumer level hardware in a reasonable cost.
 HDM project targeting providing a small but usable base model that can be used for various tasks or perform as a experiment platform or even in practical applications.
 
+
+![](images/thumbnail.webp)
+
 ## Usage
 * requirements: python>=3.10, correct nvidia driver/cuda installed for triton to work.
 * Clone this repo
