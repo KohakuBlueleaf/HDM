@@ -435,7 +435,9 @@ def main():
     model_name = "./models/hdm-xut-340M-1024px.ckpt"
     run_name = "xut-small-qwen3-1024px"
     dtype = torch.float16 if torch.cuda.is_available() else torch.float32
-    device = torch.device("cuda:0") if torch.cuda.is_available() else torch.device("cpu")
+    device = (
+        torch.device("cuda:0") if torch.cuda.is_available() else torch.device("cpu")
+    )
 
     unet, te, tokenizers, vae, scheduler = load_model(
         omegaconf.OmegaConf.to_container(

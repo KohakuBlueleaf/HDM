@@ -6,8 +6,7 @@ from hdm.pipeline import HDMXUTPipeline
 torch.set_float32_matmul_precision("high")
 pipeline = (
     HDMXUTPipeline.from_pretrained(
-        "KBlueLeaf/HDM-xut-340M-anime",
-        trust_remote_code=True
+        "KBlueLeaf/HDM-xut-340M-anime", trust_remote_code=True
     )
     .to("cuda:0")
     .to(torch.float16)

@@ -133,7 +133,7 @@ class HDMXUTPipeline(DiffusionPipeline):
         current_t = 1.0
         dt = 1.0 / num_inference_steps
 
-        for _ in (pbar:=self.progress_bar(range(num_inference_steps))):
+        for _ in (pbar := self.progress_bar(range(num_inference_steps))):
             cond = self.transformer(
                 image,
                 t,
