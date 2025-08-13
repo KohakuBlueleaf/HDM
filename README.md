@@ -50,3 +50,5 @@ python ./scripts/train.py <train toml config path>
 
 ## License
 This project is still under developement, therefore all the models, source code, text, documents or any media in this project are licensed under `CC-BY-NC-SA 4.0` until the finish of development.
+
+For any usage that may require any kind of standalone, specialized license. Please directly contact kohaku@kblueleaf.net
