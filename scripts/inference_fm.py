@@ -13,6 +13,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import gradio as gr
+from safetensors import safe_open
 
 torch.set_float32_matmul_precision("medium")
 from PIL import Image
@@ -454,8 +455,12 @@ def main():
         .eval()
         .requires_grad_(False)
     )
-    ckpt = torch.load(model_name, map_location="cpu", weights_only=False)
-    missing, unexpected = trainer_model.load_state_dict(ckpt, strict=False)
+
+    state_dict = {}
+    with safe_open("./models/hdm-xut-340M-1204px-note.safetensors", framework="pt", device=0) as f:
+        for k in f.keys():
+            state_dict[k] = f.get_tensor(k)
+    missing, unexpected = trainer_model.load_state_dict(state_dict, strict=False)
     trainer_model = trainer_model.to(dtype).to(device)
 
     if unexpected:

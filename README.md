@@ -6,16 +6,23 @@ HDM project targeting providing a small but usable base model that can be used f
 ![](images/thumbnail.webp)
 
 ## Usage
+
+### ComfyUI
+* Install this node: https://github.com/KohakuBlueleaf/HDM-ext
+* Ensure the transformers library is >= 4.52
+    * if you install it from some manager, it should be handled automatically.
+
+### Installation
+For local gradio UI or diffusers pipeline inference, you will need to install this repository into your python environment
+
 * requirements: python>=3.10, correct nvidia driver/cuda installed for triton to work.
 * Clone this repo
 * Install this repo with following option
     * fused: install xformers/liger-kernel for fused operation
     * win: install triton-windows for torch.compile to work
     * tipo: install tipo-kgen and llama.cpp for TIPO prompt gen
-* download model file [`hdm-xut-340M-1024px.ckpt`](https://arozos.kblueleaf.net/share/dc426f15-bfdc-4dc4-8cd1-20363816fc24/) to `./models` folder
+* download model file [`hdm-xut-340M-1204px-note.safetensors`](https://huggingface.co/KBlueLeaf/HDM-xut-340M-anime/blob/main/hdm-xut-340M-1024px-note.safetensors) to `./models` folder
 * start the gradio app or check the diffusers pipeline inference script
-
-For example:
 ```bash
 git clone https://github.com/KohakuBlueleaf/HDM
 cd HDM
@@ -30,15 +37,33 @@ pip install -e .[fused,tipo]
 ```
 You can use `uv venv` and `uv pip install` as well which will be way more efficient.
 
-For Inference 
+### Gradio UI
+Once you installed this library with correct dependencies and download the model to `./models` folder.
+
+Run following commands:
 ```
-# (gradio ui)
 python ./scripts/inference_fm.py
-# diffusers pipeline
-python ./scripts/inference_diffusers.py
 ```
 
-For Finetuning/Training
+### Diffusers pipeline
+hdm library provide a custom pipeline to utilize diffusers' pipeline model format:
+```python
+import torch
+from hdm.pipeline import HDMXUTPipeline
+
+pipeline = (
+    HDMXUTPipeline.from_pretrained(
+        "KBlueLeaf/HDM-xut-340M-anime", trust_remote_code=True
+    )
+    .to("cuda:0")
+    .to(torch.float16)
+)
+images = pipeline(
+    "1girl, masterpiece, newest", "worst quality, old"
+).images
+```
+
+### Training/Finetuning
 ```
 python ./scripts/train.py <train toml config path>
 ```

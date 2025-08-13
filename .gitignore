@@ -3,7 +3,6 @@
 *.pth
 *.safetensors
 inference_output/
-models/
 sample/
 wandb/
 KBlueLeaf/
