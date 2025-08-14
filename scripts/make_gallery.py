@@ -80,7 +80,7 @@ index = 1
 shutil.rmtree(MODEL_SAMPLE_PATH, ignore_errors=True)
 os.makedirs(MODEL_SAMPLE_PATH, exist_ok=True)
 imgs = os.listdir(PATH)
-random.seed(22)
+random.seed(32)
 random.shuffle(imgs)
 for img in imgs:
     if not any(img.endswith(ext) for ext in [".png", ".jpg", ".jpeg", ".webp"]):
@@ -133,6 +133,6 @@ with open("./KBlueLeaf/HDM-xut-340M-anime/README.md", "w", encoding="utf-8") as 
     result = (
         base_template
         .replace("{gallery}", result)
-        # .replace(PATH, f"https://huggingface.co/KBlueLeaf/HDM-xut-340M-anime/resolve/main/{PATH}")
+        .replace(PATH, f"https://huggingface.co/KBlueLeaf/HDM-xut-340M-anime/resolve/main/{PATH}")
     )
     f.write(result)
