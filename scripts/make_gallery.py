@@ -1,7 +1,9 @@
 import os
 import sys
 sys.path.append(".")
+import shutil
 import json
+import random
 from PIL import Image, ExifTags
 from template.content_template import (
     selectors,
@@ -32,10 +34,32 @@ def get_png_info(image):
         for node in nodes:
             if "ShowText|pysssss" == node["type"]:
                 return node["widgets_values"][0][0]
+    if "prompt" in info:
+        prompt = json.loads(info["prompt"])
+        prompts = []
+        find_target = False
+        for k, node in prompt.items():
+            if "CLIPTextEncode" == node['class_type']:
+                text = node['inputs']['text']
+                if isinstance(text, list):
+                    target_id = text[0]
+                    target_widget_id = text[1]
+                    find_target = True
+                else:
+                    prompts.append(text)
+        if not find_target:
+            return prompts[-1]
+        else:
+            for k, node in prompt.items():
+                if k == target_id:
+                    if "text" in node["inputs"]:
+                        return node["inputs"]["text"]
+                    text = node.get('widgets_values', [""])[target_widget_id]
     return ""
 
 
 PATH = "images/samples"
+MODEL_SAMPLE_PATH = "./KBlueLeaf/HDM-xut-340M-anime/images/samples"
 
 
 with open("./template/gallery_template.md", "r", encoding="utf-8") as f:
@@ -48,8 +72,17 @@ all_thumbnail_nav = []
 all_slides = []
 
 
+thumbnail = Image.open("./images/thumbnail.png")
+thumbnail.save("./images/thumbnail.webp", quality=100)
+thumbnail.save("./KBlueLeaf/HDM-xut-340M-anime/images/thumbnail.webp", quality=100)
+
 index = 1
-for img in os.listdir(PATH):
+shutil.rmtree(MODEL_SAMPLE_PATH, ignore_errors=True)
+os.makedirs(MODEL_SAMPLE_PATH, exist_ok=True)
+imgs = os.listdir(PATH)
+random.seed(22)
+random.shuffle(imgs)
+for img in imgs:
     if not any(img.endswith(ext) for ext in [".png", ".jpg", ".jpeg", ".webp"]):
         continue
 
@@ -64,6 +97,8 @@ for img in os.listdir(PATH):
 
     if not description:
         continue
+
+    shutil.copyfile(os.path.join(PATH, img), os.path.join(MODEL_SAMPLE_PATH, img))
 
     description = f"Prompt: {description}"
 
@@ -98,6 +133,6 @@ with open("./KBlueLeaf/HDM-xut-340M-anime/README.md", "w", encoding="utf-8") as 
     result = (
         base_template
         .replace("{gallery}", result)
-        .replace(PATH, f"https://huggingface.co/KBlueLeaf/HDM-xut-340M-anime/resolve/main/{PATH}")
+        # .replace(PATH, f"https://huggingface.co/KBlueLeaf/HDM-xut-340M-anime/resolve/main/{PATH}")
     )
     f.write(result)
