@@ -268,7 +268,61 @@ Based on vast.ai pricing, renting four RTX5090 rigs for 385 hours costs approxim
 
 ## 5. Results
 
-TBD
+### Prompt following with composition consistency
+We have observed that this model can achieve this kind of ability which "it will not change global composition when you change the tag but not adding/removing concepts" under same seed/sampler settings.
+
+***Example1***
+
+with following base prompt:
+```
+1girl, 
+mejiro ardan \(umamusume\), umamusume, 
+ningen mame, 
+
+ninjin nouko, solo, horse ears, animal ears, horse girl, tail, long hair, horse tail, blue hair, purple eyes, full body, white background, simple background, looking at viewer, braid, shirt, black footwear, white shirt, open mouth, breasts, smile, long sleeves, crown braid, waving, boots, toes, standing, blush, long shirt, single off shoulder, single bare shoulder, very long shirt, t-shirt, bra strap, micro shorts, black shorts, large breasts, shorts,
+
+a character from the series "Umamusume," created by the artist ningen mame. She is dressed in a casual outfit consisting of a white top and dark shorts, paired with black boots. Her pose is dynamic, as she stands confidently with her hands on her hips, exuding an air of determination or readiness. The overall style of the artwork is characterized by vibrant colors and detailed, expressive features typical of ningen mame's work.
+
+masterpiece, newest, safe, absurdres
+```
+
+and negative prompt:
+```
+low quality, worst quality, text, signature, jpeg artifacts, bad anatomy, old, early, copyright name, watermark, artist name, signature, weibo username, mosaic censoring, bar censor, censored, text, speech bubbles, realistic, jacket, open jacket
+```
+
+We have following result
+
+| 1. Base | 2. + neg: "jacket" | 3. + neg: "open jacet" | 4. pos: "open mouth" -> "closed mouth"|
+|-|-|-|-|
+|![](images/example/prompting/ComfyUI_03241_.png)|![](images/example/prompting/ComfyUI_03240_.png)|![](images/example/prompting/ComfyUI_03239_.png)|![](images/example/prompting/ComfyUI_03238_.png)|
+
+
+***Example2***
+
+To ensure the "composition consistency" is not a thing comes from highly detailed, long text ctx. (Which may served as register token or super strong condition signal to force model to output same result).
+
+We provide following example with truncated prompt from example1:
+
+base prompt:
+```
+1girl, 
+mejiro ardan \(umamusume\), umamusume, 
+ningen mame, 
+
+solo, horse ears, animal ears, horse girl, tail, long hair, horse tail, blue hair, purple eyes, full body, white background, simple background, looking at viewer, braid, shirt, white footwear, white shirt, closed mouth, breasts, smile, long sleeves, crown braid, waving, boots, toes, standing, blush, long shirt, t-shirt, bra strap, 
+
+masterpiece, newest, safe, absurdres
+```
+
+Negative prompt: same as Example1
+
+We get following results
+
+| 1. Base Prompt | 2. pos: "closed mouth" -> "open mouth" | 3. pos: "white footwear" -> "black footwear"|
+|-|-|-|
+|![](images/example/prompting/ComfyUI_03267_.png)|![](images/example/prompting/ComfyUI_03268_.png)|![](images/example/prompting/ComfyUI_03269_.png)|
+
 
 ## 6. Conclusion  
 
