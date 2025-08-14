@@ -19,15 +19,12 @@ with torch.autocast("cuda", torch.float16):
     image = pipeline(
         [
             """
-1girl, 
-m4 sopmod ii (mod3) (girls' frontline), m4 sopmod ii (girls' frontline), girls' frontline, 
-zi ye (hbptcsg2), 
+1girl, nagato (azur lane), azur lane, dan-98,
+animal, outdoors, black hair, animal ear fluff, tree, wide sleeves, nature, umbrella, yellow eyes, night, long hair, forest, fur-trimmed kimono, snow, oil-paper umbrella, snowing, fur trim, winter, solo, oversized animal, blunt bangs, fox ears, hime cut, wooden bridge, looking at viewer, scenery, red kimono, kimono, fox, long sleeves, fox girl, animal ears, japanese clothes, straight hair, bridge, bare tree,
 
-multicolored hair, torn clothes, solo, sand, wide shot, hair between eyes, smile, outdoors, beach, scenery, looking at viewer, dusk, coat, open mouth, cloudy sky, streaked hair, satellite dish, red hair, cityscape, cloud, headgear, sidelocks, ocean, black coat, gloves, floating hair, waves, long hair, wind, torn coat, standing, red eyes, pink hair, sky, city lights, building, skyscraper,
+The image, created by the artist dan-98, depicts a serene winter scene from the Azur Lane series. It features two characters standing on a wooden bridge that spans over a snowy forest. One character is holding an oil-paper umbrella with a red and white pattern, providing shelter to both figures. The backdrop of bare trees and falling snowflakes enhances the tranquil atmosphere of this picturesque winter landscape.
 
-A young girl with long blonde hair, wearing a red and black outfit with horns on her head. the sky is filled with stars and planets, and there are two large satellite dishes on either side of the girl's head. in the background, there is a cityscape with tall buildings and skyscrapers. the overall mood of the image is peaceful and serene.
-
-masterpiece, newest, commentary, photoshop (medium), absurdres
+masterpiece, newest, absurdres
 """.strip().replace(
                 "\n", " "
             )
@@ -41,9 +38,16 @@ realistic, 2girls, 3girls, multiple girls, crop top, cropped head, cropped
 """.strip().replace(
             "\n", " "
         ),
-        width=1536,
-        height=864,
+        width=1280,
+        height=960,
         cfg_scale=3.0,
+        tread_gamma1=0.25,
+        tread_gamma2=0.75,
+        camera_param={
+            "zoom": 0.95,
+            "x_shift": 0.0,
+            "y_shift": -0.1,
+        },
         num_inference_steps=32,
     )
 

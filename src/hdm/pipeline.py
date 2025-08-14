@@ -7,6 +7,7 @@ from diffusers import AutoencoderKL
 from transformers import Qwen3Model, Qwen2Tokenizer
 
 from hdm.modules.xut import XUDiTConditionModel
+from xut.modules.axial_rope import make_axial_pos_no_cache
 
 
 class HDMXUTPipeline(DiffusionPipeline):
@@ -56,34 +57,18 @@ class HDMXUTPipeline(DiffusionPipeline):
         height: int = 1024,
         cfg_scale: float = 3.0,
         num_inference_steps: int = 16,
+        camera_param: dict[str, float] = {
+            "zoom": 1.0,
+            "x_shift": 0.0,
+            "y_shift": 0.0,
+        },
+        tread_gamma1: float = 0.0,
+        tread_gamma2: float = 0.5,
         generator: Optional[torch.Generator] = None,
         output_type: Optional[str] = "pil",
         return_dict: bool = True,
         **kwargs,
     ) -> Union[ImagePipelineOutput, Tuple]:
-        r"""
-        Args:
-            batch_size (`int`, *optional*, defaults to 1):
-                The number of images to generate.
-            generator (`torch.Generator`, *optional*):
-                A [torch generator](https://pytorch.org/docs/stable/generated/torch.Generator.html) to make generation
-                deterministic.
-            eta (`float`, *optional*, defaults to 0.0):
-                The eta parameter which controls the scale of the variance (0 is DDIM and 1 is one type of DDPM).
-            num_inference_steps (`int`, *optional*, defaults to 50):
-                The number of denoising steps. More denoising steps usually lead to a higher quality image at the
-                expense of slower inference.
-            output_type (`str`, *optional*, defaults to `"pil"`):
-                The output format of the generate image. Choose between
-                [PIL](https://pillow.readthedocs.io/en/stable/): `PIL.Image.Image` or `np.array`.
-            return_dict (`bool`, *optional*, defaults to `True`):
-                Whether or not to return a [`~pipeline_utils.ImagePipelineOutput`] instead of a plain tuple.
-        Returns:
-            [`~pipeline_utils.ImagePipelineOutput`] or `tuple`: [`~pipelines.utils.ImagePipelineOutput`] if
-            `return_dict` is True, otherwise a `tuple. When returning a tuple, the first element is a list with the
-            generated images.
-        """
-
         if isinstance(prompts, str):
             prompts = [prompts]
         if isinstance(negative_prompts, str):
@@ -129,6 +114,13 @@ class HDMXUTPipeline(DiffusionPipeline):
             .repeat(image.size(0))
         )
 
+        latent_h, latent_w = image.shape[-2:]
+        pos_map = make_axial_pos_no_cache(latent_h, latent_w, device=self.device)
+        pos_map[..., 0] = pos_map[..., 0] + camera_param.get("y_shift", 0.0)
+        pos_map[..., 1] = pos_map[..., 1] + camera_param.get("x_shift", 0.0)
+        pos_map = pos_map / camera_param.get("zoom", 1.0)
+        pos_map = pos_map[None].expand(image.size(0), -1, -1)
+
         t = torch.tensor([1] * image.size(0), device=self.device)
         current_t = 1.0
         dt = 1.0 / num_inference_steps
@@ -140,8 +132,9 @@ class HDMXUTPipeline(DiffusionPipeline):
                 prompt_emb,
                 added_cond_kwargs={
                     "addon_info": aspect_ratio,
-                    "tread_rate": None,
+                    "tread_rate": tread_gamma1,
                 },
+                pos_map=pos_map,
             ).sample
             uncond = self.transformer(
                 image,
@@ -149,8 +142,9 @@ class HDMXUTPipeline(DiffusionPipeline):
                 negative_prompt_emb,
                 added_cond_kwargs={
                     "addon_info": aspect_ratio,
-                    "tread_rate": 0.5,
+                    "tread_rate": tread_gamma2,
                 },
+                pos_map=pos_map,
             ).sample
             cfg_flow = uncond + cfg_scale * (cond - uncond)
             image = image - dt * cfg_flow
