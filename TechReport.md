@@ -215,22 +215,22 @@ This capability emerges naturally from our training strategy and positional enco
 
 To achieve efficient pretraining and inference on consumer hardware, we minimize model size while maintaining capability. We propose two HDM backbone scales:
 
-| Hyperparameter | XUT-base | XUT-large |
-|---|---|---|
-| Dimension | 1024 | 1280 |
-| Context Dim (TE model) | 1024 (Qwen3-0.6B) | 1152 (Gemma3-1B) |
-| MLP Dimension | 3072 | 4096 |
-| Attention Heads | 8 | 10 |
-| Attention Head Dim | 128 | 128 |
-| XUT Depth (d) | 4 | 4 |
-| Encoder Blocks (enc_b) | 1 | 1 |
-| Decoder Blocks (dec_b) | 3 | 3 |
-| N (depth before TREAD) | 1 | 1 |
-| M (depth after TREAD merge) | 3 | 3 |
-| Total Transformer Blocks | 20 | 20 |
-| Total Attention Layers | 24 | 24 |
-| Sequence Length at 256² | 256 | 256 |
-| Parameters (XUT part) | 343M | 555M |
+| Hyperparameter | XUT-small | XUT-base | XUT-large |
+|---|---|---|---|
+| Dimension | 896 | 1024 | 1280 |
+| Context Dim (TE model) | 640 (Gemma3-270M) | 1024 (Qwen3-0.6B) | 1152 (Gemma3-1B) |
+| MLP Dimension | 3072 | 3072 | 4096 |
+| Attention Heads | 14 | 16 | 10 |
+| Attention Head Dim | 64 | 64 | 128 |
+| XUT Depth (d) | 4 | 4 | 4 |
+| Encoder Blocks (enc_b) | 1 | 1 | 1 |
+| Decoder Blocks (dec_b) | 2 | 3 | 3 |
+| N (depth before TREAD) | 1 | 1 | 1 |
+| M (depth after TREAD merge)| 3 | 3 | 3 |
+| Total Transformer Blocks | 16 | 20 | 20 |
+| Total Attention Layers | 20 | 24 | 24 |
+| Sequence Length at 256² | 256 | 256 | 256 |
+| Parameters (XUT part) | 237M | 343M | 555M |
 
 This technical report focuses on XUT-base validation to establish the complete training recipe and design principles.
 
