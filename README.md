@@ -1,4 +1,4 @@
-# HDM - Home made Diffusion Models
+# [WIP] HDM - Home made Diffusion Models
 
 [![Source Code - HDM (Here)](https://img.shields.io/badge/Source_Code_(Here)-HDM-2ea44f)](https://github.com/KohakuBlueleaf/HDM)
 [![Source Code - HDM(ComfyUI)](https://img.shields.io/badge/Source_Code-HDM(ComfyUI)-2ea44f)](https://github.com/KohakuBlueleaf/HDM-ext)
