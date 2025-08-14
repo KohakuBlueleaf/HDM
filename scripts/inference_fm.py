@@ -457,7 +457,7 @@ def main():
     )
 
     state_dict = {}
-    with safe_open("./models/hdm-xut-340M-1204px-note.safetensors", framework="pt", device=0) as f:
+    with safe_open("./models/hdm-xut-340M-1024px-note.safetensors", framework="pt", device=0) as f:
         for k in f.keys():
             state_dict[k] = f.get_tensor(k)
     missing, unexpected = trainer_model.load_state_dict(state_dict, strict=False)
