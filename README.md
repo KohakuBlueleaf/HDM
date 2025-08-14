@@ -1,7 +1,8 @@
 # HDM - Home made Diffusion Models
 
-[![Source Code - HDM (Here)](https://img.shields.io/badge/Source_Code-HDM-2ea44f)](https://github.com/KohakuBlueleaf/HDM)
+[![Source Code - HDM (Here)](https://img.shields.io/badge/Source_Code_(Here)-HDM-2ea44f)](https://github.com/KohakuBlueleaf/HDM)
 [![Source Code - HDM(ComfyUI)](https://img.shields.io/badge/Source_Code-HDM(ComfyUI)-2ea44f)](https://github.com/KohakuBlueleaf/HDM-ext)
+[![Model - HDM](https://img.shields.io/badge/Model-HDM-2ea44f)](https://huggingface.co/KBlueLeaf/HDM-xut-340M-anime)
 [![Document - Tech Report](https://img.shields.io/badge/Document-Tech_Report-2ea44f)](https://github.com/KohakuBlueleaf/HDM/blob/main/TechReport.md)
 
 HDM is a series of models that trained diffusion models (flow matching) from scratch with consumer level hardware in a reasonable cost.
