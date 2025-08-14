@@ -47,8 +47,11 @@ def get_png_info(image):
                     find_target = True
                 else:
                     prompts.append(text)
-        if not find_target:
-            return prompts[-1]
+        if not find_target and len(prompts)>1:
+            if "low quality" in prompts[0]:
+                return prompts[-1]
+            else:
+                return prompts[0]
         else:
             for k, node in prompt.items():
                 if k == target_id:
