@@ -15,10 +15,9 @@ pipeline = (
 # pipeline.apply_compile(mode="default", dynamic=True)
 
 
-with torch.autocast("cuda", torch.float16):
-    image = pipeline(
-        [
-            """
+image = pipeline(
+    [
+        """
 1girl, nagato (azur lane), azur lane, dan-98,
 animal, outdoors, black hair, animal ear fluff, tree, wide sleeves, nature, umbrella, yellow eyes, night, long hair, forest, fur-trimmed kimono, snow, oil-paper umbrella, snowing, fur trim, winter, solo, oversized animal, blunt bangs, fox ears, hime cut, wooden bridge, looking at viewer, scenery, red kimono, kimono, fox, long sleeves, fox girl, animal ears, japanese clothes, straight hair, bridge, bare tree,
 
@@ -26,30 +25,30 @@ The image, created by the artist dan-98, depicts a serene winter scene from the 
 
 masterpiece, newest, absurdres
 """.strip().replace(
-                "\n", " "
-            )
-        ]
-        * 4,
-        """
+            "\n", " "
+        )
+    ]
+    * 4,
+    """
 low quality, worst quality, text, signature, jpeg artifacts, bad anatomy, old, early, 
 copyright name, watermark, artist name, signature, weibo username, mosaic censoring, 
 bar censor, censored, text, speech bubbles, hair intake, 
 realistic, 2girls, 3girls, multiple girls, crop top, cropped head, cropped
 """.strip().replace(
-            "\n", " "
-        ),
-        width=1280,
-        height=960,
-        cfg_scale=3.0,
-        tread_gamma1=0.25,
-        tread_gamma2=0.75,
-        camera_param={
-            "zoom": 0.95,
-            "x_shift": 0.0,
-            "y_shift": -0.1,
-        },
-        num_inference_steps=32,
-    )
+        "\n", " "
+    ),
+    width=1280,
+    height=960,
+    cfg_scale=3.0,
+    tread_gamma1=0.25,
+    tread_gamma2=0.75,
+    camera_param={
+        "zoom": 0.95,
+        "x_shift": 0.0,
+        "y_shift": -0.1,
+    },
+    num_inference_steps=32,
+)
 
 
 output_folder = "./inference_output/diffusers-pipeline"

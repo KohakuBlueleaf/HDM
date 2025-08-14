@@ -107,27 +107,27 @@ class HDMXUTPipeline(DiffusionPipeline):
             ),
             generator=generator,
         )
-        image = image.to(self.device)
+        image = image.to(self.device).to(self.dtype)
         aspect_ratio = (
             torch.tensor([width / height], device=self.device)
             .log()
             .repeat(image.size(0))
-        )
+        ).to(self.dtype)
 
         latent_h, latent_w = image.shape[-2:]
         pos_map = make_axial_pos_no_cache(latent_h, latent_w, device=self.device)
         pos_map[..., 0] = pos_map[..., 0] + camera_param.get("y_shift", 0.0)
         pos_map[..., 1] = pos_map[..., 1] + camera_param.get("x_shift", 0.0)
         pos_map = pos_map / camera_param.get("zoom", 1.0)
-        pos_map = pos_map[None].expand(image.size(0), -1, -1)
+        pos_map = pos_map[None].expand(image.size(0), -1, -1).to(self.dtype)
 
-        t = torch.tensor([1] * image.size(0), device=self.device)
+        t = torch.tensor([1] * image.size(0), device=self.device).to(self.dtype)
         current_t = 1.0
         dt = 1.0 / num_inference_steps
 
         for _ in (pbar := self.progress_bar(range(num_inference_steps))):
             cond = self.transformer(
-                image,
+                image.to(self.dtype),
                 t,
                 prompt_emb,
                 added_cond_kwargs={
@@ -135,9 +135,9 @@ class HDMXUTPipeline(DiffusionPipeline):
                     "tread_rate": tread_gamma1,
                 },
                 pos_map=pos_map,
-            ).sample
+            ).sample.float()
             uncond = self.transformer(
-                image,
+                image.to(self.dtype),
                 t,
                 negative_prompt_emb,
                 added_cond_kwargs={
@@ -145,7 +145,7 @@ class HDMXUTPipeline(DiffusionPipeline):
                     "tread_rate": tread_gamma2,
                 },
                 pos_map=pos_map,
-            ).sample
+            ).sample.float()
             cfg_flow = uncond + cfg_scale * (cond - uncond)
             image = image - dt * cfg_flow
             t = t - dt
@@ -153,8 +153,8 @@ class HDMXUTPipeline(DiffusionPipeline):
 
         torch.cuda.empty_cache()
         image = image * self.vae_std.to(self.device) + self.vae_mean.to(self.device)
-        image = torch.concat([self.vae.decode(i[None]).sample for i in image])
-        image = (image / 2 + 0.5).clamp(0, 1)
+        image = torch.concat([self.vae.decode(i[None].to(self.dtype)).sample for i in image])
+        image = (image.float() / 2 + 0.5).clamp(0, 1)
         image = image.cpu().permute(0, 2, 3, 1).numpy()
 
         if output_type == "pil":
