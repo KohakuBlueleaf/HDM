@@ -21,7 +21,15 @@ HDM project targeting providing a small but usable base model that can be used f
 ### Installation
 For local gradio UI or diffusers pipeline inference, you will need to install this repository into your python environment
 
-* requirements: python>=3.10, correct nvidia driver/cuda installed for triton to work.
+* requirements: 
+    * python>=3.10, python<3.13 (3.13 or higher may not work with pytorch)
+    * correct nvidia driver/cuda installed for triton to work.
+    * pytorch==2.7.x with triton 3.3.x
+    * or, pytorch==2.8.x with triton 3.4.x
+    * Optional requirements:
+        * TIPO(KGen): llama-cpp-python (may need custom built wheel)
+        * liger-kernel: For fused SwiGLU (with torch.compile will works as well)
+        * LyCORIS: For lycoris finetune
 * Clone this repo
 * Install this repo with following option
     * fused: install xformers/liger-kernel for fused operation
@@ -39,7 +47,8 @@ source venv/bin/activate
 # You may want to install pytorch by yourself
 # pip install -U torch torchvision xformers --index-url https://download.pytorch.org/whl/cu128
 # use [..., win] if you are using windows, e.g. [fused,tipo,win]
-pip install -e .[fused,tipo]
+# e.g: pip install -e .[fused,win]
+pip install -e .
 ```
 You can use `uv venv` and `uv pip install` as well which will be way more efficient.
 
@@ -55,6 +64,16 @@ python ./scripts/inference_fm.py
 hdm library provide a custom pipeline to utilize diffusers' pipeline model format:
 ```python
 import torch
+import xut.env
+
+# enable/disable different backend for XUT implementation
+# With vanilla/xformers disabled, XUT will use pytorch SDPA attention kernel
+xut.env.TORCH_COMPILE = True        # torch.compile for unit module
+xut.env.USE_LIGER = False           # Use liger-kernel SwiGLU
+xut.env.USE_VANILLA = False         # Use vanilla attention
+xut.env.USE_XFORMERS = True         # Use xformers attention
+xut.env.USE_XFORMERS_LAYERS = True  # Use xformers SwiGLU
+
 from hdm.pipeline import HDMXUTPipeline
 
 pipeline = (
@@ -64,8 +83,24 @@ pipeline = (
     .to("cuda:0")
     .to(torch.float16)
 )
+## Uncomment following line for torch.compile to work on "Whole backbone"
+# pipeline.apply_compile(mode="default", dynamic=True)
 images = pipeline(
-    "1girl, masterpiece, newest", "worst quality, old"
+    # Prompts/negative prompts can be list or direct string
+    prompts=["1girl, dragon girl, kimono, masterpiece, newest"]*2, 
+    negative_prompts="worst quality, low quality, old, early",
+    width=1024,
+    height=1440,
+    cfg_scale=3.0,
+    num_inference_steps=24,
+    # For camera_param and tread_gamma, check Tech Report for more information.
+    camera_param = {
+        "zoom": 1.0,
+        "x_shift": 0.0,
+        "y_shift": 0.0,
+    }
+    tread_gamma1 = 0.0,
+    tread_gamma2 = 0.5,
 ).images
 ```
 
