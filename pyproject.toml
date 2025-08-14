@@ -14,7 +14,7 @@ readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "accelerate",
-    "torch",
+    "torch>=2.7.0",
     "torchvision",
     "einops",
     "transformers>4.52",
@@ -41,7 +41,6 @@ win = [
 ]
 tipo = [
     "tipo-kgen",
-    "llama-cpp-python"
 ]
 finetune = [
     "lycoris-lora"
