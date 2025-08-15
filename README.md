@@ -98,7 +98,7 @@ images = pipeline(
         "zoom": 1.0,
         "x_shift": 0.0,
         "y_shift": 0.0,
-    }
+    },
     tread_gamma1 = 0.0,
     tread_gamma2 = 0.5,
 ).images
