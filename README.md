@@ -105,9 +105,18 @@ images = pipeline(
 ```
 
 ### Training/Finetuning
+For both training and finetune you should use `scripts/train.py` script with correct toml config.
+
+For example, you can refer `config/train/hdm-xut-340M-ft.toml` as example lycoris finetune config for HDM-xut-340M 1024px model.
+
+You will need to download the corresponding training_ckpt or safetensors file from HuggingFace repo and fill the file path to model.model_path in the config file.
+
+Then you can run following command:
 ```
 python ./scripts/train.py <train toml config path>
 ```
+
+**About the dataset**: For simplicity, `hdm.data.kohya.KohyaDataset` support the dataset format which supported by kohya-ss/sd-scripts, while the "repeat" functionality is not implemented yet.
 
 ## Next Plan
 * UNet-based Hires-Fix/Refiner model

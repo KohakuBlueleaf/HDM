@@ -23,6 +23,7 @@ from lightning.pytorch.callbacks import (
 )
 from lightning.pytorch.loggers import WandbLogger
 from PIL import Image
+from safetensors import safe_open
 
 from hdm.modules.text_encoders import ConcatTextEncoders
 from hdm.utils import instantiate
@@ -274,7 +275,12 @@ def main(config_path):
             },
         ).cpu()
         if "model_path" in model:
-            state_dict = torch.load(model["model_path"], map_location="cpu")
+            path = model["model_path"]
+            if path.endswith(".safetensors"):
+                with safe_open(path, framework="pt", device="cpu") as f:
+                    state_dict = {k: f.get_tensor(k) for k in f.keys()}
+            else:
+                state_dict = torch.load(path, map_location="cpu")
             missing, unexpected = trainer_model.load_state_dict(
                 state_dict, strict=False
             )
