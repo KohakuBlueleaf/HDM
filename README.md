@@ -6,7 +6,7 @@
 [![Document - Tech Report](https://img.shields.io/badge/Document-Tech_Report-2ea44f)](https://github.com/KohakuBlueleaf/HDM/blob/main/TechReport.md)
 
 HDM is a series of models that trained diffusion models (flow matching) from scratch with consumer level hardware in a reasonable cost.
-HDM project targeting providing a small but usable base model that can be used for various tasks or perform as a experiment platform or even in practical applications.
+HDM project targeting providing a small but usable base model that can be used for various tasks or perform as an experiment platform or even in practical applications.
 
 
 ![](images/thumbnail.webp)
