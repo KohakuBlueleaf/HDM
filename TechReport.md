@@ -375,8 +375,10 @@ TBD
 ### A. Future Plans
 
 - Expand to more general datasets, currently considering gbc-10m + coyo11m + laion-coco-13m + danbooru (total 40M images)
-- Scale model size to approximately 500M parameters with ~1B parameter text encoder
+- Scale up model size to approximately 500M parameters with ~1B parameter text encoder
+- Scale down model size to approximately 250M parameters with ~500M or smaller parameter text encoder
 - Investigate "Hires Fix Model" or "Refiner" approaches for enhanced quality
+- Investigate PixNerd or other pixel space appraoch on XUT.
 
 ### B. Acknowledgements
 

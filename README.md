@@ -124,9 +124,27 @@ python ./scripts/train.py <train toml config path>
 * Use more general dataset (around 40M scale)
     * Currently consider laion-coco-13m + gbc-10m + coyohd-11m + danbooru (total 40M)
     * Will finetune from HDM-xut-340M 256px or 512px ckpt for testing this dataset
-* Pretrain a slightly larger model (see tech report, the XUT-large, 555M scale model)
+* Investigate the possibility to utilize MDM(Matryoshka Diffusion Models) technique.
+    * for example, current arch have best efficiecy in 512x512, not 1024x1024. But with MDM approach I can keep the 512px backbone but train some addon arch to make it 1024px.
+* Pretrain a slightly larger model (see tech report, the XUT-large, ~550M scale model)
+* Pretrain a slightly smaller model (see tech report, the XUT-small, ~230M scale model)
+* Pixel space model
+    * PixNerd
+    * MDM
+    * others....
 
 ## License
 This project is still under developement, therefore all the models, source code, text, documents or any media in this project are licensed under `CC-BY-NC-SA 4.0` until the finish of development.
 
 For any usage that may require any kind of standalone, specialized license. Please directly contact kohaku@kblueleaf.net
+
+## Cite
+```bibtex
+@misc{HDM,
+    title={HDM: Improved UViT-like Architecture with a Special Recipe for Fast Pre-training on Consumer-Level Hardware}, 
+    author={Shin-Ying Yeh},
+    year={2025},
+    month={August},
+    howpublished=\url{https://github.com/KohakuBlueleaf/HDM},
+}
+```
