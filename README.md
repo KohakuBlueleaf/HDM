@@ -15,6 +15,7 @@ HDM project targeting providing a small but usable base model that can be used f
 
 ### ComfyUI
 * Install this node: https://github.com/KohakuBlueleaf/HDM-ext
+   * https://registry.comfy.org/zh/nodes/HDM-ext
 * Ensure the transformers library is >= 4.52
     * if you install it from some manager, it should be handled automatically.
 
