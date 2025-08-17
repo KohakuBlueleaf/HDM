@@ -35,6 +35,7 @@ For local gradio UI or diffusers pipeline inference, you will need to install th
     * fused: install xformers/liger-kernel for fused operation
     * win: install triton-windows for torch.compile to work
     * tipo: install tipo-kgen and llama.cpp for TIPO prompt gen
+    * lycoris: install lycoris for LyCORIS finetune.
 * download model file [`hdm-xut-340M-1204px-note.safetensors`](https://huggingface.co/KBlueLeaf/HDM-xut-340M-anime/blob/main/hdm-xut-340M-1024px-note.safetensors) to `./models` folder
 * start the gradio app or check the diffusers pipeline inference script
 ```bash
