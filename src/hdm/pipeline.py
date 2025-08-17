@@ -63,7 +63,7 @@ class HDMXUTPipeline(DiffusionPipeline):
             "y_shift": 0.0,
         },
         tread_gamma1: float = 0.0,
-        tread_gamma2: float = 0.5,
+        tread_gamma2: float = 0.25,
         generator: Optional[torch.Generator] = None,
         output_type: Optional[str] = "pil",
         return_dict: bool = True,

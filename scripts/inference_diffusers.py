@@ -37,15 +37,15 @@ realistic, 2girls, 3girls, multiple girls, crop top, cropped head, cropped
 """.strip().replace(
         "\n", " "
     ),
-    width=1280,
-    height=960,
+    width=1024,
+    height=1024,
     cfg_scale=3.0,
-    tread_gamma1=0.25,
-    tread_gamma2=0.75,
+    tread_gamma1=0.0,
+    tread_gamma2=0.0,
     camera_param={
-        "zoom": 0.95,
+        "zoom": 1,
         "x_shift": 0.0,
-        "y_shift": -0.1,
+        "y_shift": 0,
     },
     num_inference_steps=32,
 )
