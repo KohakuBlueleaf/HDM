@@ -296,7 +296,7 @@ def main(config_path):
         unet.eval().to(inf_dtype).cpu().requires_grad_(False)
     torch.cuda.empty_cache()
 
-    if hasattr(trainer_model, "lycoris_model"):
+    if getattr(trainer_model, "lycoris_model", None) is not None:
         logger.watch(trainer_model.lycoris_model, log="all", log_freq=32)
     else:
         logger.watch(trainer_model.unet, log="all", log_freq=32)
